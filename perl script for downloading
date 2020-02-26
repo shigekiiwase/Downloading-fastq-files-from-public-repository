@@ -1,0 +1,59 @@
+#!/usr/bin/perl
+use Time::Local;
+use Term::ANSIColor; 
+
+$STATUS="Kerimoglu_STATUS.txt";
+
+system ("rm $STATUS; ls -l");
+print color ("reset"), "\n\n\n"; sleep 1; 
+system ("ls -l");
+
+open (STDERR,">$STATUS");
+
+system ("/home/saurabha/UTILITIES/SRATOOLS/sratoolkit.2.8.2-1-centos_linux64/bin/fastq-dump --version");
+print "-------------------------------------------------------\n\n\n"; sleep 2;
+
+@SAMPLES=qw(
+Input_Kmt2a_Control:::SRR5591651
+H3K4me3_Kmt2a_cKO_3:::SRR5591650
+H3K4me3_Kmt2a_cKO_2:::SRR5591649
+H3K4me3_Kmt2a_Control_5:::SRR5591647
+H3K4me3_Kmt2a_Control_4:::SRR5591646
+H3K4me3_Kmt2a_Control_3:::SRR5591645
+H3K4me3_Kmt2a_Control_2:::SRR5591644
+H3K4me3_Kmt2a_Control_1:::SRR5591643
+H3K4me3_Kmt2a_cKO_1:::SRR5591648
+H3K4me3_Kmt2b_cKO_4:::SRR5591684
+H3K4me3_Kmt2b_cKO_3:::SRR5591683
+H3K4me3_Kmt2b_cKO_2:::SRR5591682
+H3K4me3_Kmt2b_cKO_1:::SRR5591681
+H3K4me3_Kmt2b_Control_5:::SRR5591679
+H3K4me3_Kmt2b_Control_4:::SRR5591678
+H3K4me3_Kmt2b_Control_3:::SRR5591677
+H3K4me3_Kmt2b_Control_2:::SRR5591676
+H3K4me3_Kmt2b_Control_1:::SRR5591675
+H3K4me3_Kmt2b_Control_6:::SRR5591680
+H3K4me3_Kmt2b_cKO_5:::SRR5591685
+Input_Kmt2b_Control:::SRR5591686
+Input_Kmt2b_cKO:::SRR5591687
+Input_Kmt2a_cKO:::SRR5591652);
+
+for $x (0 .. $#SAMPLES)
+{
+($SAMPLE,$SRA) = split(":::",$SAMPLES[$x]);
+$OUTFILE=$SAMPLE."_".$SRA."_".$x.".fastq.gz";
+
+$COMMAND="/home/saurabha/UTILITIES/SRATOOLS/sratoolkit.2.8.2-1-centos_linux64/bin/fastq-dump --split-files --stdout $SRA | gzip > $OUTFILE";
+
+print color ("cyan"), scalar localtime, " ############ $x $SAMPLE\t$SRA\n", color ("yellow"),"$COMMAND\n";
+
+system ("$COMMAND");
+$SIZE=`ls -l $OUTFILE`;
+print STDERR scalar localtime, "############ $x $SAMPLE\t$SRA\n$COMMAND\n$SIZE\n";
+print color ("green"), "$SIZE\n\n";
+print color ("green"); "Downloaded and Converted !!! $x $SAMPLE\t$SRA\n$COMMAND\n\n\n";
+sleep 2;
+}
+close STDERR;
+print color ("yellow"),"Downloading SRAs Finished On All\nDONE !!!\nDONE !!!\nDONE !!!\nDONE !!!\nDONE !!!\n", color("reset");
+
